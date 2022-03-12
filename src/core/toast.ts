@@ -12,11 +12,14 @@ import { dispatch, ActionType } from './store';
 
 type Message = ValueOrFunction<Renderable, Toast>;
 
-type ToastHandler = (message: Message, options?: ToastOptions) => string;
+type Description = ValueOrFunction<Renderable, Toast>;
+
+type ToastHandler = (message: Message, description?: Description, options?: ToastOptions) => string;
 
 const createToast = (
   message: Message,
   type: ToastType = 'blank',
+  description?: Description,
   opts?: ToastOptions
 ): Toast => ({
   createdAt: Date.now(),
@@ -27,6 +30,7 @@ const createToast = (
     'aria-live': 'polite',
   },
   message,
+  description,
   pauseDuration: 0,
   ...opts,
   id: opts?.id || genId(),
@@ -34,20 +38,22 @@ const createToast = (
 
 const createHandler = (type?: ToastType): ToastHandler => (
   message,
+  description,
   options
 ) => {
-  const toast = createToast(message, type, options);
+  const toast = createToast(message, type, description, options);
   dispatch({ type: ActionType.UPSERT_TOAST, toast });
   return toast.id;
 };
 
-const toast = (message: Message, opts?: ToastOptions) =>
-  createHandler('blank')(message, opts);
+const toast = (message: Message, description?: Description, opts?: ToastOptions) =>
+  createHandler('blank')(message, description, opts);
 
 toast.error = createHandler('error');
 toast.success = createHandler('success');
 toast.loading = createHandler('loading');
 toast.custom = createHandler('custom');
+toast.warn = createHandler('warn');
 
 toast.dismiss = (toastId?: string) => {
   dispatch({
@@ -68,11 +74,11 @@ toast.promise = <T>(
   },
   opts?: DefaultToastOptions
 ) => {
-  const id = toast.loading(msgs.loading, { ...opts, ...opts?.loading });
+  const id = toast.loading(msgs.loading, null,{ ...opts, ...opts?.loading });
 
   promise
     .then((p) => {
-      toast.success(resolveValue(msgs.success, p), {
+      toast.success(resolveValue(msgs.success, p), null, {
         id,
         ...opts,
         ...opts?.success,
@@ -80,7 +86,7 @@ toast.promise = <T>(
       return p;
     })
     .catch((e) => {
-      toast.error(resolveValue(msgs.error, e), {
+      toast.error(resolveValue(msgs.error, e), null, {
         id,
         ...opts,
         ...opts?.error,

@@ -41,6 +41,14 @@ const Message = styled('div')`
   white-space: pre-line;
 `;
 
+const Description = styled('div')`
+  display: flex;
+  justify-content: flex-start;
+  margin: 4px 10px;
+  color: inherit;
+  white-space: pre-line;
+`;
+
 interface ToastBarProps {
   toast: Toast;
   position?: ToastPosition;
@@ -48,6 +56,7 @@ interface ToastBarProps {
   children?: (components: {
     icon: Renderable;
     message: Renderable;
+    description?: Renderable;
   }) => Renderable;
 }
 
@@ -85,6 +94,12 @@ export const ToastBar: React.FC<ToastBarProps> = React.memo(
       </Message>
     );
 
+    const description = (
+      <Description {...toast.ariaProps}>
+        {resolveValue(toast.description, toast)}
+      </Description>
+    );
+
     return (
       <ToastBarBase
         className={toast.className}
@@ -98,11 +113,13 @@ export const ToastBar: React.FC<ToastBarProps> = React.memo(
           children({
             icon,
             message,
+            description,
           })
         ) : (
           <>
             {icon}
             {message}
+            {description}
           </>
         )}
       </ToastBarBase>

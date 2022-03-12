@@ -1,6 +1,6 @@
 import { CSSProperties } from 'react';
 
-export type ToastType = 'success' | 'error' | 'loading' | 'blank' | 'custom';
+export type ToastType = 'success' | 'error' | 'warn' | 'loading' | 'blank' | 'custom';
 export type ToastPosition =
   | 'top-left'
   | 'top-center'
@@ -35,6 +35,7 @@ export interface Toast {
   type: ToastType;
   id: string;
   message: ValueOrFunction<Renderable, Toast>;
+  description?: ValueOrFunction<Renderable, Toast>;
   icon?: Renderable;
   duration?: number;
   pauseDuration: number;
