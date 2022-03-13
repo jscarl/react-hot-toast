@@ -41,14 +41,6 @@ const Message = styled('div')`
   white-space: pre-line;
 `;
 
-const Description = styled('div')`
-  display: flex;
-  justify-content: flex-start;
-  margin: 4px 10px;
-  color: inherit;
-  white-space: pre-line;
-`;
-
 interface ToastBarProps {
   toast: Toast;
   position?: ToastPosition;
@@ -88,17 +80,10 @@ export const ToastBar: React.FC<ToastBarProps> = React.memo(
       : { opacity: 0 };
 
     const icon = <ToastIcon toast={toast} />;
-    const message = (
-      <Message {...toast.ariaProps}>
-        {resolveValue(toast.message, toast)}
-      </Message>
-    );
 
-    const description = (
-      <Description {...toast.ariaProps}>
-        {resolveValue(toast.description, toast)}
-      </Description>
-    );
+    const message = resolveValue(toast.message, toast);
+
+    const description = resolveValue(toast.description, toast);
 
     return (
       <ToastBarBase
